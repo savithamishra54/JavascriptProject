@@ -1,0 +1,91 @@
+<html>
+<body>
+    <form onsubmit="saveToLocalStorage(event)">
+        <label>Choose expenseamount </label>
+        <input id="amount" type="number" name="Chooseexpenseamount"  required/>
+        <label> Choose description</label>
+        <input id="description" type="text" name="Choosedescription"  required/>
+        <label>Choose category</label>
+        <input id="category" type="text" name="Choosecategory" />
+        <button> Add expense </button>
+    </form>
+    <ul id='listOfUsers'></ul>
+    <script>
+        function saveToLocalStorage(event) {
+            event.preventDefault();
+            const amount = event.target.Chooseexpenseamount.value;
+            const description = event.target.Choosedescription.value;
+            const category = event.target.Choosecategory.value;
+            // localStorage.setItem('name', name);
+            // localStorage.setItem('email', email);
+            // localStorage.setItem('phonenumber', phonenumber)
+            const obj = {
+                amount,
+                description,
+                category
+            }
+            localStorage.setItem(obj.description, JSON.stringify(obj))
+            showListofRegisteredUser(obj)
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+                const localStorageObj = localStorage;
+                const localstoragekeys  = Object.keys(localStorageObj)
+
+                for(var i =0; i< localstoragekeys.length; i++){
+                    const key = localstoragekeys[i]
+                    const userDetailsString = localStorageObj[key];
+                    const userDetailsObj = JSON.parse(userDetailsString);
+                    showNewUserOnScreen(userDetailsObj)
+                }
+            })
+         
+            function showNewUserOnScreen(user){
+                document.getElementById('description').value = '';
+                document.getElementById('amount').value = '';
+                document.getElementById('category').value ='';
+                // console.log(localStorage.getItem(user.emailId))
+                if(localStorage.getItem(user.description) !== null){
+                    removeUserFromScreen(user.description)
+                }
+
+                const parentNode = document.getElementById('listOfUsers');
+                const childHTML = `<li id=${user.description}> ${user.amount} - ${user.description}
+                                        <button onclick=deleteUser('${user.description}')> Delete User </button>
+                                        <button onclick=editUserDetails('${user.description}','${user.amount}','${user.category}')>Edit User </button>
+                                     </li>`
+
+                parentNode.innerHTML = parentNode.innerHTML + childHTML;
+            }
+
+            //Edit User
+
+            function editUserDetails(Choosedescription, amount, category){
+
+                document.getElementById('description').value = Choosedescription;
+                document.getElementById('amount').value = amount;
+                document.getElementById('category').value =category;
+
+                deleteUser(Choosedescription)
+             }
+
+            // deleteUser('abc@gmail.com')
+
+            function deleteUser(Choosedescription){
+                console.log(Choosedescription)
+                localStorage.removeItem(Choosedescription);
+                removeUserFromScreen(Choosedescription);
+
+            }
+
+            function removeUserFromScreen(Choosedescription){
+                const parentNode = document.getElementById('listOfUsers');
+                const childNodeToBeDeleted = document.getElementById(Choosedescription);
+                if(childNodeToBeDeleted) {
+                    parentNode.removeChild(childNodeToBeDeleted)
+                }
+            }
+
+        </script>
+</body>
+</html>
